@@ -21,15 +21,27 @@ class MapModel extends ChangeNotifier {
     _mapController = controller;
   }
 
-  void getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    double lat = position.latitude;
-    double long = position.longitude;
-    _currentPosition = LatLng(lat, long);
-    updateCurrentAddress();
+  Future<void> getLocation(BuildContext context) async {
+    bool permissionGranted = await _requestLocationPermission(context);
+    if (permissionGranted) {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
+      double lat = position.latitude;
+      double long = position.longitude;
+      _currentPosition = LatLng(lat, long);
+      updateCurrentAddress();
+    } else {}
     notifyListeners();
+  }
+
+  Future<bool> _requestLocationPermission(BuildContext context) async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      return false;
+    }
+    return true;
   }
 
   Future<void> updateCurrentAddress() async {

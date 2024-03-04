@@ -5,6 +5,7 @@ import 'package:locate_me/firebase_options.dart';
 import 'package:locate_me/view/screen/map_screen.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
